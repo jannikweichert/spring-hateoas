@@ -16,6 +16,8 @@
 package org.springframework.hateoas;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.springframework.http.MediaType;
 
@@ -30,8 +32,43 @@ public interface AffordanceModel {
 	/**
 	 * The media types this is a model for. Can be multiple ones as often media types come in different flavors like an
 	 * XML and JSON one and in simple cases a single model might serve them all.
-	 * 
+	 *
 	 * @return will never be {@literal null}.
 	 */
 	Collection<MediaType> getMediaTypes();
+
+	/**
+	 * Get the name of an affordance's relation.
+	 *
+	 * @return
+	 */
+	default String getRel() {
+		return "";
+	}
+
+	/**
+	 * Get the URI of an affordance.
+	 * 
+	 * @return
+	 */
+	String getURI();
+
+	/**
+	 * Collection of input properties needed to render a mediatype.
+	 * 
+	 * @return
+	 */
+	default List<AffordanceModelProperty> getInputProperties() {
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Collection of query properties used to query a resource.
+	 *
+	 * @return
+	 */
+	default List<AffordanceModelProperty> getQueryProperties() {
+		return Collections.emptyList();
+	}
+
 }

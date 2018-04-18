@@ -25,9 +25,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.hateoas.Affordance;
-import org.springframework.hateoas.AffordanceModel;
+import org.springframework.hateoas.AffordanceModelProperty;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.QueryParameter;
+import org.springframework.hateoas.UriComponentsBasedAffordanceModel;
 import org.springframework.hateoas.support.PropertyUtils;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -36,20 +37,16 @@ import org.springframework.web.util.UriComponents;
 /**
  * @author Greg Turnquist
  */
-class CollectionJsonAffordanceModel implements AffordanceModel {
-
-	private static final List<HttpMethod> METHODS_FOR_INPUT_DETECTION = Arrays.asList(HttpMethod.POST, HttpMethod.PUT,
-		HttpMethod.PATCH);
+class CollectionJsonAffordanceModel extends UriComponentsBasedAffordanceModel {
 
 	private final Affordance affordance;
-	private final UriComponents components;
-	private final @Getter List<CollectionJsonData> inputProperties;
-	private final @Getter List<CollectionJsonData> queryProperties;
+	private final @Getter List<AffordanceModelProperty> inputProperties;
+	private final @Getter List<AffordanceModelProperty> queryProperties;
 
 	CollectionJsonAffordanceModel(Affordance affordance, UriComponents components) {
 
+		super(components);
 		this.affordance = affordance;
-		this.components = components;
 
 		this.inputProperties = determineAffordanceInputs();
 		this.queryProperties = determineQueryProperties();
@@ -61,52 +58,73 @@ class CollectionJsonAffordanceModel implements AffordanceModel {
 	}
 
 	public String getRel() {
-		return isHttpGetMethod() ? this.affordance.getName() : "";
-	}
-
-	public String getUri() {
-		return isHttpGetMethod() ? this.components.toUriString() : "";
+		
+		if (this.affordance.getHttpMethod().equals(HttpMethod.GET)) {
+			return this.affordance.getName();
+		} else {
+			return "";
+		}
 	}
 
 	/**
-	 * Transform a list of {@link QueryParameter}s into a list of {@link CollectionJsonData} objects.
-	 * 
+	 * Get the URI of an affordance.
+	 *
 	 * @return
 	 */
-	private List<CollectionJsonData> determineQueryProperties() {
-
-		if (!isHttpGetMethod()) {
-			return Collections.emptyList();
+	@Override
+	public String getURI() {
+		
+		if (this.affordance.getHttpMethod().equals(HttpMethod.GET)) {
+			return super.getURI();
+		} else {
+			return "";
 		}
-
-		return this.affordance.getQueryMethodParameters().stream()
-			.map(queryProperty -> new CollectionJsonData().withName(queryProperty.getName()).withValue(""))
-			.collect(Collectors.toList());
-	}
-
-	private boolean isHttpGetMethod() {
-		return this.affordance.getHttpMethod().equals(HttpMethod.GET);
 	}
 
 	/**
 	 * Look at the inputs for a Spring MVC controller method to decide the {@link Affordance}'s properties.
-	 * Then transform them into a list of {@link CollectionJsonData} objects.
+	 * Then transform them into a list of {@link AffordanceModelProperty} objects.
 	 */
-	private List<CollectionJsonData> determineAffordanceInputs() {
+	private List<AffordanceModelProperty> determineAffordanceInputs() {
 
-		if (!METHODS_FOR_INPUT_DETECTION.contains(affordance.getHttpMethod())) {
+		if (Arrays.asList(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH).contains(affordance.getHttpMethod())) {
+
+			return this.affordance.getInputMethodParameters().stream()
+				.findFirst()
+				.map(methodParameter -> {
+					ResolvableType resolvableType = ResolvableType.forMethodParameter(methodParameter);
+					return PropertyUtils.findPropertyNames(resolvableType);
+				})
+				.orElse(Collections.emptyList())
+				.stream()
+				.map(propertyName -> new CollectionJsonData()
+					.withName(propertyName)
+					.withValue(""))
+				.collect(Collectors.toList());
+
+		} else {
+			return Collections.emptyList();
+
+		}
+	}
+
+	/**
+	 * Transform a list of {@link QueryParameter}s into a list of {@link CollectionJsonData} objects.
+	 *
+	 * @return
+	 */
+	private List<AffordanceModelProperty> determineQueryProperties() {
+
+		if (this.affordance.getHttpMethod().equals(HttpMethod.GET)) {
+			
+			return this.affordance.getQueryMethodParameters().stream()
+				.map(queryProperty -> new CollectionJsonData()
+					.withName(queryProperty.getName())
+					.withValue(""))
+				.collect(Collectors.toList());
+		} else {
 			return Collections.emptyList();
 		}
-
-		return this.affordance.getInputMethodParameters().stream()
-			.findFirst()
-			.map(methodParameter -> {
-				ResolvableType resolvableType = ResolvableType.forMethodParameter(methodParameter);
-				return PropertyUtils.findProperties(resolvableType);
-			})
-			.orElse(Collections.emptyList())
-			.stream()
-			.map(property -> new CollectionJsonData().withName(property).withValue(""))
-			.collect(Collectors.toList());
 	}
+
 }

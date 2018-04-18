@@ -79,10 +79,10 @@ public class PropertyUtilsTest {
 			.map(methodParameter -> ResolvableType.forMethodParameter(methodParameter.getMethod(), methodParameter.getParameterIndex()))
 			.orElseThrow(() -> new RuntimeException("Didn't find a parameter annotated with @RequestBody!"));
 
-		List<String> properties = PropertyUtils.findProperties(resolvableType);
+		List<String> propertyNames = PropertyUtils.findPropertyNames(resolvableType);
 
-		assertThat(properties).hasSize(2);
-		assertThat(properties).contains("name", "role");
+		assertThat(propertyNames).hasSize(2);
+		assertThat(propertyNames).contains("name", "role");
 	}
 
 	@Test
@@ -101,6 +101,20 @@ public class PropertyUtilsTest {
 			new SimpleEntry<>("username", "fbaggins"),
 			new SimpleEntry<>("fullName", "Frodo Baggins"),
 			new SimpleEntry<>("usernameAndLastName", "fbaggins+++Baggins"));
+	}
+
+	@Test
+	public void objectWithNullReturningGetter() {
+
+		EmployeeWithNullReturningGetter employee = new EmployeeWithNullReturningGetter("Frodo");
+
+		Map<String, Object> properties = PropertyUtils.findProperties(employee);
+
+		assertThat(properties).hasSize(2);
+		assertThat(properties.keySet()).containsExactlyInAnyOrder("name", "father");
+		assertThat(properties.entrySet()).containsExactlyInAnyOrder(
+			new SimpleEntry<>("name", "Frodo"),
+			new SimpleEntry<>("father", null));
 	}
 
 	@Data
@@ -125,6 +139,17 @@ public class PropertyUtilsTest {
 		@JsonIgnore(false)
 		public String getUsernameAndLastName() {
 			return this.username + "+++" + this.lastName;
+		}
+	}
+
+	@Data
+	static class EmployeeWithNullReturningGetter {
+
+		private String name;
+		private String father;
+
+		EmployeeWithNullReturningGetter(String name) {
+			this.name = name;
 		}
 	}
 
