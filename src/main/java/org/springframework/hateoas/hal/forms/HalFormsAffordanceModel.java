@@ -77,18 +77,23 @@ class HalFormsAffordanceModel extends UriComponentsBasedAffordanceModel {
 	private List<AffordanceModelProperty> determineAffordanceInputs(Affordance affordance) {
 
 		if (Arrays.asList(HttpMethod.POST, HttpMethod.PUT, HttpMethod.PATCH).contains(affordance.getHttpMethod())) {
-			
+
 			return affordance.getInputMethodParameters().stream()
 				.findFirst()
 				.map(methodParameter -> {
 					ResolvableType resolvableType = ResolvableType.forMethodParameter(methodParameter);
-					return PropertyUtils.findPropertyNames(resolvableType);
+					return PropertyUtils.findPropertiesAndDetails(resolvableType);
 				})
-				.orElse(Collections.emptyList()).stream()
-				.map(propertyName -> HalFormsProperty.named(propertyName).withRequired(required))
+				.orElse(Collections.emptyMap()).entrySet().stream()
+				.map(property -> property.getValue()
+					.map(affordanceProperty -> HalFormsProperty.named(property.getKey())
+						.withPrompt(affordanceProperty.getPrompt())
+						.withRegex(affordanceProperty.getPattern())
+						.withReadOnly(affordanceProperty.getReadOnly()))
+					.orElse(HalFormsProperty.named(property.getKey()))
+					.withRequired(required))
 				.map(halFormsProperty -> (AffordanceModelProperty) halFormsProperty)
 				.collect(Collectors.toList());
-			
 		} else {
 			return Collections.emptyList();
 		}

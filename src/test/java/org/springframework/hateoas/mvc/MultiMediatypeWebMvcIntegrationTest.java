@@ -103,10 +103,10 @@ public class MultiMediatypeWebMvcIntegrationTest {
 				.andExpect(jsonPath("$.collection.links[0].href", is("http://localhost/employees")))
 
 				.andExpect(jsonPath("$.collection.items.*", hasSize(1)))
-				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("name")))
-				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("Frodo Baggins")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("role")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("ring bearer")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("name")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("Frodo Baggins")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("role")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("ring bearer")))
 
 				.andExpect(jsonPath("$.collection.items[0].links.*", hasSize(1)))
 				.andExpect(jsonPath("$.collection.items[0].links[0].rel", is("employees")))
@@ -129,19 +129,19 @@ public class MultiMediatypeWebMvcIntegrationTest {
 				.andExpect(jsonPath("$.collection.href", is("http://localhost/employees")))
 
 				.andExpect(jsonPath("$.collection.items.*", hasSize(2)))
-				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("name")))
-				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("Frodo Baggins")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("role")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("ring bearer")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("name")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("Frodo Baggins")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("role")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("ring bearer")))
 
 				.andExpect(jsonPath("$.collection.items[0].links.*", hasSize(1)))
 				.andExpect(jsonPath("$.collection.items[0].links[0].rel", is("employees")))
 				.andExpect(jsonPath("$.collection.items[0].links[0].href", is("http://localhost/employees")))
 
-				.andExpect(jsonPath("$.collection.items[1].data[1].name", is("name")))
-				.andExpect(jsonPath("$.collection.items[1].data[1].value", is("Bilbo Baggins")))
-				.andExpect(jsonPath("$.collection.items[1].data[0].name", is("role")))
-				.andExpect(jsonPath("$.collection.items[1].data[0].value", is("burglar")))
+				.andExpect(jsonPath("$.collection.items[1].data[0].name", is("name")))
+				.andExpect(jsonPath("$.collection.items[1].data[0].value", is("Bilbo Baggins")))
+				.andExpect(jsonPath("$.collection.items[1].data[1].name", is("role")))
+				.andExpect(jsonPath("$.collection.items[1].data[1].value", is("burglar")))
 
 				.andExpect(jsonPath("$.collection.items[1].links.*", hasSize(1)))
 				.andExpect(jsonPath("$.collection.items[1].links[0].rel", is("employees")))
@@ -174,10 +174,10 @@ public class MultiMediatypeWebMvcIntegrationTest {
 				.andExpect(jsonPath("$.collection.links[0].href", is("http://localhost/employees")))
 
 				.andExpect(jsonPath("$.collection.items.*", hasSize(1)))
-				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("name")))
-				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("W. Chandry")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("role")))
-				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("developer")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].name", is("name")))
+				.andExpect(jsonPath("$.collection.items[0].data[0].value", is("W. Chandry")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].name", is("role")))
+				.andExpect(jsonPath("$.collection.items[0].data[1].value", is("developer")))
 
 				.andExpect(jsonPath("$.collection.items[0].links.*", hasSize(1)))
 				.andExpect(jsonPath("$.collection.items[0].links[0].rel", is("employees")))

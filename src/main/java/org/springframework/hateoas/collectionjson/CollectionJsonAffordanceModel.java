@@ -93,15 +93,19 @@ class CollectionJsonAffordanceModel extends UriComponentsBasedAffordanceModel {
 				.findFirst()
 				.map(methodParameter -> {
 					ResolvableType resolvableType = ResolvableType.forMethodParameter(methodParameter);
-					return PropertyUtils.findPropertyNames(resolvableType);
+					return PropertyUtils.findPropertiesAndDetails(resolvableType);
 				})
-				.orElse(Collections.emptyList())
-				.stream()
-				.map(propertyName -> new CollectionJsonData()
-					.withName(propertyName)
-					.withValue(""))
+				.orElse(Collections.emptyMap()).entrySet().stream()
+				.map(property -> property.getValue()
+					.map(affordanceProperty -> new CollectionJsonData()
+						.withName(property.getKey())
+						.withValue("")
+						.withPrompt(affordanceProperty.getPrompt()))
+					.orElse(new CollectionJsonData()
+						.withName(property.getKey())
+						.withValue("")))
+				.map(collectionJsonProperty -> (AffordanceModelProperty) collectionJsonProperty)
 				.collect(Collectors.toList());
-
 		} else {
 			return Collections.emptyList();
 
